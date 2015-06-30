@@ -324,28 +324,7 @@
         });
 
 		
-		myAppModule.filter('subs', function() {
-		  return function(input) {
-				var result = "";
-				if (input > 0)
-				{
-				var check3 = input % 3;
-				var check5 = input % 5;
-				var check15 = input % 15;
-				
-				if (check3 === 0) result = "C";
-				if (check5 === 0) result = "E";
-				if (check15 === 0) result = "Z";
-				if (result === "") result = input;
-				}
-				else
-				{
-					result = input;// 0 case
-				}
-				return result;
-			  };
-		});
-
+		
 		// Allows only digits in the text input
 		myAppModule.directive('digits', function () {
 			return {
