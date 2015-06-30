@@ -178,6 +178,7 @@
 
             var player1 = {
                 Name: "Gronk",
+                GroupSize : 1,
                 HP: 48,
                 Strength: 5,
                 CMB : 8,
@@ -190,6 +191,7 @@
 
             var player2 = {
                 Name: "Sheida",
+                GroupSize: 1,
                 HP: 22,
                 Strength: 3,
                 CMB : 9,
@@ -214,39 +216,94 @@
                 {
                     //p1
                     //for each atack role to hit d20 + CMD => p2.AC == hit
-                    for (var i = 0; i < $scope.players[0].Attacks; i++) {
+                    var Critical;
+                    var Confirm;
+                    for (var i = 0; i < parseInt($scope.players[0].Attacks); i++) {
+                        Critical = false;
+                        Confirm = false;
                         var AttackRole = Math.floor((Math.random() * 20) + 1);
-                        var hit = (parseInt(AttackRole) + parseInt($scope.players[0].CMB)) >= parseInt($scope.players[1].AC);
-                        rounds.push($scope.players[0].Name + " Attack Role: " + AttackRole + " (" + (hit ? "HIT" : "MISS") + ")");
+                        Critical = (AttackRole == 20);
+                        if (Critical)
+                        {
+                            //Confirm
+                            rounds.push($scope.players[0].Name + " Attack Role: " + AttackRole + " (CRITICAL HIT!)");
+                            var ConfirmRole = Math.floor((Math.random() * 20) + 1);
+                            Confirm = (ConfirmRole == 20);
+                            if (Confirm)
+                            {
+                                rounds.push($scope.players[0].Name + " Confirm Role: " + ConfirmRole + " (CONFIRMED!!)");
+                            }
+                            else
+                            {
+                                rounds.push($scope.players[0].Name + " Confirm Role: " + ConfirmRole + " (MISS)");
+                            }
+                            
+                        }
+                        var hit = false;
+                        if (Critical)
+                        {
+                            hit = true;
+                        }
+                        else
+                        {
+                            hit = (parseInt(AttackRole) + parseInt($scope.players[0].CMB)) >= parseInt($scope.players[1].AC);
+                            rounds.push($scope.players[0].Name + " Attack Role: " + AttackRole + " (" + (hit ? "HIT" : "MISS") + ")");
+                        }
                         if (hit)
                         {
                             //roll to damage
                             var DamageRoll = 0;
-                            for (var x = 0; x < $scope.players[0].DamageDiceNumber; x++) {
+                            var Damage = 0;
+                            for (var x = 0; x < parseInt($scope.players[0].DamageDiceNumber) ; x++) {
                                 DamageRoll += Math.floor((Math.random() * parseInt($scope.players[0].DamageDiceValue)) + 1);
                             }
-                            DamageRoll += parseInt($scope.players[0].Strength);
-                            rounds.push($scope.players[0].Name + " Damage Role: " + (DamageRoll) + " (" + (DamageRoll - parseInt($scope.players[0].Strength)) + ")");
-                            HPs[1] -= DamageRoll;
+                            Damage = DamageRoll + parseInt($scope.players[0].Strength);
+                            if (Confirm) Damage = Damage * 2;
+                            rounds.push($scope.players[0].Name + " Damage Role: " + (Damage) + " (" + (DamageRoll) + ")");
+                            HPs[1] -= Damage;
                             rounds.push($scope.players[1].Name + " HP: " + HPs[1]);
                         }
                     }
                     if (HPs[1] > 0)
                     {
-                        for (var i = 0; i < $scope.players[1].Attacks; i++) {
+                        for (var i = 0; i < parseInt($scope.players[1].Attacks); i++) {
+                            Critical = false;
+                            Confirm = false;
                             var AttackRole = Math.floor((Math.random() * 20) + 1);
-                            var hit = (parseInt(AttackRole) + parseInt($scope.players[1].CMB)) >= parseInt($scope.players[0].AC);
-                            rounds.push($scope.players[1].Name + " Attack Role: " + AttackRole + " (" + (hit ? "HIT" : "MISS") + ")");
+                            Critical = (AttackRole == 20);
+                            if (Critical) {
+                                //Confirm
+                                rounds.push($scope.players[1].Name + " Attack Role: " + AttackRole + " (CRITICAL HIT!)");
+                                var ConfirmRole = Math.floor((Math.random() * 20) + 1);
+                                Confirm = (ConfirmRole == 20);
+                                if (Confirm) {
+                                    rounds.push($scope.players[1].Name + " Confirm Role: " + ConfirmRole + " (CONFIRMED!!)");
+                                }
+                                else {
+                                    rounds.push($scope.players[1].Name + " Confirm Role: " + ConfirmRole + " (MISS)");
+                                }
+
+                            }
+                            var hit = false;
+                            if (Critical) {
+                                hit = true;
+                            }
+                            else {
+                                hit = (parseInt(AttackRole) + parseInt($scope.players[1].CMB)) >= parseInt($scope.players[0].AC);
+                                rounds.push($scope.players[1].Name + " Attack Role: " + AttackRole + " (" + (hit ? "HIT" : "MISS") + ")");
+                            }
                             if (hit)
                                 if ((parseInt(AttackRole) + parseInt($scope.players[1].CMB)) >= parseInt($scope.players[0].AC)) {
                                 //roll to damage
                                     var DamageRoll = 0;
+                                    var Damage = 0;
                                     for (var x = 0; x < parseInt($scope.players[1].DamageDiceNumber); x++) {
                                         DamageRoll += Math.floor((Math.random() * parseInt($scope.players[1].DamageDiceValue)) + 1);
                                     }
-                                    DamageRoll += parseInt($scope.players[1].Strength);
-                                    rounds.push($scope.players[1].Name + " Damage Role: " + (DamageRoll) + " (" + (DamageRoll - parseInt($scope.players[1].Strength)) + ")");
-                                    HPs[0] -= DamageRoll;
+                                    Damage = DamageRoll + parseInt($scope.players[1].Strength);
+                                    if (Confirm) Damage = Damage * 2;
+                                    rounds.push($scope.players[1].Name + " Damage Role: " + (Damage) + " (" + (DamageRoll) + ")");
+                                    HPs[0] -= Damage;
                                     rounds.push($scope.players[0].Name + " HP: " + HPs[0]);
                             }
                         }
