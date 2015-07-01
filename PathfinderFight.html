@@ -87,6 +87,22 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label class="control-label col-lg-4">Critical Hit :</label>
+                                <div class="col-md-6 col-lg-8">
+                                    <input type="text" ng-model="players[0].CriticalHit" digits class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label class="control-label col-lg-4">Critical Hit Multiplier :</label>
+                                <div class="col-md-6 col-lg-8">
+                                    <input type="text" ng-model="players[0].CriticalMulti" digits class="form-control" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-lg-4">
@@ -155,6 +171,23 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label class="control-label col-lg-4">Critical Hit :</label>
+                                <div class="col-md-6 col-lg-8">
+                                    <input type="text" ng-model="players[1].CriticalHit" digits class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label class="control-label col-lg-4">Critical Hit Multiplier :</label>
+                                <div class="col-md-6 col-lg-8">
+                                    <input type="text" ng-model="players[1].CriticalMulti" digits class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="col-lg-4">
                         <h2>Battle Report</h2>
@@ -185,7 +218,9 @@
                 AC: 21,
                 Attacks: 1,
                 DamageDiceNumber: 1,
-                DamageDiceValue: 6
+                DamageDiceValue: 6,
+                CriticalHit: 20,
+                CriticalMulti :2
             };
             players.push(player1);
 
@@ -195,10 +230,12 @@
                 HP: 22,
                 Strength: 3,
                 CMB : 9,
-                AC: 20,
+                AC: 16,
                 Attacks: 2,
                 DamageDiceNumber: 1,
-                DamageDiceValue: 6
+                DamageDiceValue: 6,
+                CriticalHit: 20,
+                CriticalMulti :2
         };
 
             players.push(player2);
@@ -222,13 +259,13 @@
                         Critical = false;
                         Confirm = false;
                         var AttackRole = Math.floor((Math.random() * 20) + 1);
-                        Critical = (AttackRole == 20);
+                        Critical = (AttackRole >= parseInt($scope.players[0].CriticalHit));
                         if (Critical)
                         {
                             //Confirm
                             rounds.push($scope.players[0].Name + " Attack Role: " + AttackRole + " (CRITICAL HIT!)");
                             var ConfirmRole = Math.floor((Math.random() * 20) + 1);
-                            Confirm = (ConfirmRole == 20);
+                            Confirm = (parseInt(ConfirmRole) + parseInt($scope.players[0].CMB)) >= parseInt($scope.players[1].AC);
                             if (Confirm)
                             {
                                 rounds.push($scope.players[0].Name + " Confirm Role: " + ConfirmRole + " (CONFIRMED!!)");
@@ -258,7 +295,7 @@
                                 DamageRoll += Math.floor((Math.random() * parseInt($scope.players[0].DamageDiceValue)) + 1);
                             }
                             Damage = DamageRoll + parseInt($scope.players[0].Strength);
-                            if (Confirm) Damage = Damage * 2;
+                            if (Confirm) Damage = Damage * parseInt($scope.players[0].CriticalMulti);
                             rounds.push($scope.players[0].Name + " Damage Role: " + (Damage) + " (" + (DamageRoll) + ")");
                             HPs[1] -= Damage;
                             rounds.push($scope.players[1].Name + " HP: " + HPs[1]);
@@ -270,12 +307,12 @@
                             Critical = false;
                             Confirm = false;
                             var AttackRole = Math.floor((Math.random() * 20) + 1);
-                            Critical = (AttackRole == 20);
+                            Critical = (AttackRole >= parseInt($scope.players[1].CriticalHit));
                             if (Critical) {
                                 //Confirm
                                 rounds.push($scope.players[1].Name + " Attack Role: " + AttackRole + " (CRITICAL HIT!)");
                                 var ConfirmRole = Math.floor((Math.random() * 20) + 1);
-                                Confirm = (ConfirmRole == 20);
+                                Confirm = (parseInt(ConfirmRole) + parseInt($scope.players[1].CMB)) >= parseInt($scope.players[0].AC);
                                 if (Confirm) {
                                     rounds.push($scope.players[1].Name + " Confirm Role: " + ConfirmRole + " (CONFIRMED!!)");
                                 }
@@ -301,7 +338,7 @@
                                         DamageRoll += Math.floor((Math.random() * parseInt($scope.players[1].DamageDiceValue)) + 1);
                                     }
                                     Damage = DamageRoll + parseInt($scope.players[1].Strength);
-                                    if (Confirm) Damage = Damage * 2;
+                                    if (Confirm) Damage = Damage * parseInt($scope.players[1].CriticalMulti);
                                     rounds.push($scope.players[1].Name + " Damage Role: " + (Damage) + " (" + (DamageRoll) + ")");
                                     HPs[0] -= Damage;
                                     rounds.push($scope.players[0].Name + " HP: " + HPs[0]);
